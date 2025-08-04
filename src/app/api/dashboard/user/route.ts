@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase/server";
+import { createClient } from "@supabase/supabase-js";
+
+// Create a service role client for user operations (bypasses RLS)
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  }
+);
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,10 +28,10 @@ export async function GET(request: NextRequest) {
     console.log("Dashboard API: Fetching data for auth user:", authUserId);
 
     // First, get the profile ID from auth_user_id
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from("profiles")
       .select("id")
-      .eq("id", authUserId)
+      .eq("auth_user_id", authUserId)
       .single();
 
     if (profileError || !profile) {
@@ -33,13 +45,13 @@ export async function GET(request: NextRequest) {
     // Fetch all data in parallel with optimized queries
     const [statsResult, recentBookingsResult] = await Promise.all([
       // Get user stats with a single optimized query
-      supabase
+      supabaseAdmin
         .from("bookings")
         .select("booking_status, total")
         .eq("user_id", profileId),
 
       // Get recent bookings with optimized query
-      supabase
+      supabaseAdmin
         .from("bookings")
         .select(
           "id, order_number, pickup_date, delivery_date, booking_status, payment_status, total, created_at, address"

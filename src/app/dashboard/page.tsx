@@ -128,12 +128,15 @@ export default function UserDashboard() {
       } = await supabase.auth.getSession();
       const authToken = session?.access_token;
 
-      const response = await fetch(`/api/dashboard/user?userId=${user.id}`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `/api/dashboard/user?userId=${user.auth_user_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const result = await response.json();
 
       console.log("Dashboard data:", result);
