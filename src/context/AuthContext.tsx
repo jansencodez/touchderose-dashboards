@@ -73,6 +73,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       return { success: false, error: error.message };
     }
 
+    // Manually fetch and update user profile after successful login
+    if (data.user) {
+      setSupabaseUser(data.user);
+      const profile = await fetchUserProfile(data.user.id);
+      setUser(profile);
+    }
+
     return { success: true };
   };
 
@@ -92,6 +99,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     if (error) {
       return { success: false, error: error.message };
+    }
+
+    // Manually fetch and update user profile after successful signup
+    if (data.user) {
+      setSupabaseUser(data.user);
+      const profile = await fetchUserProfile(data.user.id);
+      setUser(profile);
     }
 
     return { success: true };
