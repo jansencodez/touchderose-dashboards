@@ -18,58 +18,9 @@ import {
 } from "lucide-react";
 import { BookingDetailsModal } from "../../components/modals/admin/BookingDetailsModal";
 import { EditBookingModal } from "../../components/modals/admin/EditBookingModal";
+import { StatusBadge } from "../../components/ui/StatusBadge";
 import { supabase } from "../../lib/supabase";
 import { Booking } from "../../types";
-
-// StatusBadge Component
-interface StatusBadgeProps {
-  status: string;
-  type?: "booking" | "payment" | "feedback";
-}
-
-const StatusBadge: React.FC<StatusBadgeProps> = ({
-  status,
-  type = "booking",
-}) => {
-  const getStatusColor = (status: string, type: string) => {
-    const statusMap: Record<string, Record<string, string>> = {
-      booking: {
-        pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
-        confirmed: "bg-blue-100 text-blue-800 border-blue-200",
-        in_progress: "bg-orange-100 text-orange-800 border-orange-200",
-        completed: "bg-green-100 text-green-800 border-green-200",
-        cancelled: "bg-red-100 text-red-800 border-red-200",
-      },
-      payment: {
-        pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
-        completed: "bg-green-100 text-green-800 border-green-200",
-        failed: "bg-red-100 text-red-800 border-red-200",
-        refunded: "bg-gray-100 text-gray-800 border-gray-200",
-      },
-      feedback: {
-        new: "bg-blue-100 text-blue-800 border-blue-200",
-        in_review: "bg-yellow-100 text-yellow-800 border-yellow-200",
-        resolved: "bg-green-100 text-green-800 border-green-200",
-        closed: "bg-gray-100 text-gray-800 border-gray-200",
-      },
-    };
-
-    return (
-      statusMap[type]?.[status] || "bg-gray-100 text-gray-800 border-gray-200"
-    );
-  };
-
-  return (
-    <span
-      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
-        status,
-        type
-      )}`}
-    >
-      {status.replace("_", " ").toUpperCase()}
-    </span>
-  );
-};
 
 // LoadingSpinner Component
 interface LoadingSpinnerProps {
