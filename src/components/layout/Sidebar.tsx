@@ -31,7 +31,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { icon: Home, label: "Dashboard", path: "/dashboard" },
     { icon: Calendar, label: "My Bookings", path: "/dashboard/bookings" },
     { icon: User, label: "Profile", path: "/dashboard/profile" },
-    { icon: FileText, label: "Blog", path: "/dashboard/blog" },
     { icon: MessageSquare, label: "Support", path: "/dashboard/support" },
   ];
 

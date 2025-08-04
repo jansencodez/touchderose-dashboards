@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     const reference = `PAY-${date}-${random}`;
 
     // Handle payment based on payment method
-    if (payment_method === "card") {
+    if (payment_method === "card" || payment_method === "mobile-money") {
       try {
         // Prepare booking data to be stored in metadata
         const bookingData = {
@@ -60,6 +60,12 @@ export async function POST(request: NextRequest) {
           total,
         };
 
+        // Set payment channels based on method
+        const channels =
+          payment_method === "mobile-money"
+            ? ["mobile_money"]
+            : ["card", "bank", "mobile_money"];
+
         // Initialize Paystack payment with booking data in metadata
         const paymentResponse = await initializePayment(
           total,
@@ -69,7 +75,8 @@ export async function POST(request: NextRequest) {
             user_id,
             reference,
           },
-          bookingData // Pass booking data to be stored in metadata
+          bookingData, // Pass booking data to be stored in metadata
+          channels // Pass payment channels
         );
 
         if (paymentResponse.status && paymentResponse.data?.authorization_url) {
@@ -92,12 +99,12 @@ export async function POST(request: NextRequest) {
         );
       }
     } else {
-      // For cash and mobile money, create booking immediately
+      // For cash payments, create booking immediately
       // This would need to be implemented if you want to support offline payments
       return NextResponse.json({
         success: true,
-        message: "Booking created successfully (offline payment)",
-        note: "Offline payment bookings need separate implementation",
+        message: "Booking created successfully (cash payment)",
+        note: "Cash payment bookings need separate implementation",
       });
     }
   } catch (error) {

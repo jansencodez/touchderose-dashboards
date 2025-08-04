@@ -86,11 +86,23 @@ export const BookingModal: React.FC<BookingModalProps> = ({
       }
 
       if (result.success) {
-        if (formData.paymentMethod === "card" && result.payment) {
-          // Redirect to Paystack payment page
+        if (
+          (formData.paymentMethod === "card" ||
+            formData.paymentMethod === "mobile-money") &&
+          result.payment
+        ) {
+          // Redirect to Paystack payment page for both card and mobile money
           window.location.href = result.payment.authorization_url;
+        } else if (formData.paymentMethod === "cash" && result.booking) {
+          // For cash payments, show success with order details
+          toast.success(
+            `Cash booking created successfully! Order #${result.booking.order_number}`,
+            { id: "booking" }
+          );
+          onSuccess?.();
+          onClose();
         } else {
-          // For cash and mobile money, show success
+          // Generic success for other cases
           toast.success("Booking created successfully!", { id: "booking" });
           onSuccess?.();
           onClose();
@@ -387,11 +399,26 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 </label>
                 <div className="space-y-2">
                   {[
-                    { value: "card", label: "Credit/Debit Card (Paystack)" },
-                    { value: "mobile-money", label: "M-Pesa/Airtel Money" },
-                    { value: "cash", label: "Cash on Delivery" },
+                    {
+                      value: "card",
+                      label: "Credit/Debit Card",
+                      description: "Visa, Mastercard, Verve via Paystack",
+                    },
+                    {
+                      value: "mobile-money",
+                      label: "Mobile Money",
+                      description: "M-Pesa, Airtel Money via Paystack",
+                    },
+                    {
+                      value: "cash",
+                      label: "Cash on Delivery",
+                      description: "Pay when your order is delivered",
+                    },
                   ].map((method) => (
-                    <label key={method.value} className="flex items-center">
+                    <label
+                      key={method.value}
+                      className="flex items-start p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                    >
                       <input
                         type="radio"
                         name="paymentMethod"
@@ -403,11 +430,16 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                             paymentMethod: e.target.value as any,
                           })
                         }
-                        className="mr-3"
+                        className="mr-3 mt-0.5"
                       />
-                      <span className="text-sm text-gray-700">
-                        {method.label}
-                      </span>
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-900">
+                          {method.label}
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          {method.description}
+                        </div>
+                      </div>
                     </label>
                   ))}
                 </div>

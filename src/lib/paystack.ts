@@ -56,7 +56,8 @@ export const initializePayment = async (
     user_id: string;
     reference?: string;
   },
-  bookingData?: any // Optional booking data to store in metadata
+  bookingData?: any, // Optional booking data to store in metadata
+  channels?: string[] // Optional payment channels (card, bank, ussd, qr, mobile_money, bank_transfer)
 ): Promise<PaystackInitializeResponse> => {
   try {
     const response = await fetch(
@@ -75,6 +76,7 @@ export const initializePayment = async (
           callback_url: `${
             process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
           }/payment/callback`,
+          channels: channels || ["card", "bank", "mobile_money"], // Default channels
           metadata: bookingData
             ? {
                 ...metadata,
