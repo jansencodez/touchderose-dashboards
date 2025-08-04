@@ -2,7 +2,16 @@
 const nextConfig = {
   swcMinify: false,
   images: {
-    domains: ["images.pexels.com", "uxxfjnmbvtsbjctnjysr.supabase.co"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+      },
+      {
+        protocol: "https",
+        hostname: "uxxfjnmbvtsbjctnjysr.supabase.co",
+      },
+    ],
   },
 };
 

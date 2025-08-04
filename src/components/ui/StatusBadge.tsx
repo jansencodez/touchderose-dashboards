@@ -10,29 +10,49 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
   type = "booking",
 }) => {
   const getStatusColor = (status: string, type: string) => {
-    const statusMap: Record<string, Record<string, string>> = {
-      booking: {
-        pending: "bg-yellow-100 text-yellow-800",
-        confirmed: "bg-blue-100 text-blue-800",
-        in_progress: "bg-orange-100 text-orange-800",
-        completed: "bg-green-100 text-green-800",
-        cancelled: "bg-red-100 text-red-800",
-      },
-      payment: {
-        pending: "bg-yellow-100 text-yellow-800",
-        completed: "bg-green-100 text-green-800",
-        failed: "bg-red-100 text-red-800",
-        refunded: "bg-gray-100 text-gray-800",
-      },
-      feedback: {
-        new: "bg-blue-100 text-blue-800",
-        in_review: "bg-yellow-100 text-yellow-800",
-        resolved: "bg-green-100 text-green-800",
-        closed: "bg-gray-100 text-gray-800",
-      },
-    };
-
-    return statusMap[type]?.[status] || "bg-gray-100 text-gray-800";
+    if (type === "booking") {
+      switch (status) {
+        case "pending":
+          return "bg-yellow-100 text-yellow-800";
+        case "confirmed":
+          return "bg-blue-100 text-blue-800";
+        case "in_progress":
+          return "bg-orange-100 text-orange-800";
+        case "completed":
+          return "bg-green-100 text-green-800";
+        case "cancelled":
+          return "bg-red-100 text-red-800";
+        default:
+          return "bg-gray-100 text-gray-800";
+      }
+    } else if (type === "payment") {
+      switch (status) {
+        case "pending":
+          return "bg-yellow-100 text-yellow-800";
+        case "completed":
+          return "bg-green-100 text-green-800";
+        case "failed":
+          return "bg-red-100 text-red-800";
+        case "refunded":
+          return "bg-gray-100 text-gray-800";
+        default:
+          return "bg-gray-100 text-gray-800";
+      }
+    } else if (type === "feedback") {
+      switch (status) {
+        case "new":
+          return "bg-blue-100 text-blue-800";
+        case "in_review":
+          return "bg-yellow-100 text-yellow-800";
+        case "resolved":
+          return "bg-green-100 text-green-800";
+        case "closed":
+          return "bg-gray-100 text-gray-800";
+        default:
+          return "bg-gray-100 text-gray-800";
+      }
+    }
+    return "bg-gray-100 text-gray-800";
   };
 
   return (
