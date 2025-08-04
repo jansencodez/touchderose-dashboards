@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -122,17 +123,15 @@ export default function UserDashboard() {
     setError(null);
 
     try {
-      // Get the current session to pass the auth token
+      // Get the current user using Supabase SSR
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const authToken = session?.access_token;
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
 
       const response = await fetch(
         `/api/dashboard/user?userId=${user.auth_user_id}`,
         {
           headers: {
-            Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
           },
         }

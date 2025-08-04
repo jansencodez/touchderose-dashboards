@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
@@ -78,8 +79,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const setAuthFromSession = async (session: any) => {
-    if (!session?.user) {
+  const setAuthFromUser = async (authUser: SupabaseUser) => {
+    if (!authUser) {
       setUser(null);
       setSupabaseUser(null);
       setIsAuthenticated(false);
@@ -88,11 +89,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     // Set supabase user immediately for faster response
-    setSupabaseUser(session.user);
+    setSupabaseUser(authUser);
     setIsAuthenticated(true);
 
     // Fetch profile in background
-    const profile = await fetchUserProfile(session.user.id);
+    const profile = await fetchUserProfile(authUser.id);
 
     if (!profile) {
       // Don't sign out immediately, just set error
@@ -107,23 +108,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const initializeAuth = async () => {
     try {
-      // Get session without waiting for profile fetch
+      // Get current user using Supabase SSR
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
+        data: { user: authUser },
+        error,
+      } = await supabase.auth.getUser();
 
-      if (session) {
-        // Set basic auth state immediately
-        setSupabaseUser(session.user);
-        setIsAuthenticated(true);
+      if (error || !authUser) {
+        setUser(null);
+        setSupabaseUser(null);
+        setIsAuthenticated(false);
+        setError(null);
+        return;
+      }
 
-        // Fetch profile in background
-        const profile = await fetchUserProfile(session.user.id);
-        if (profile) {
-          setUser(profile);
-        } else {
-          setError("Profile not found. Please contact support.");
-        }
+      // Set basic auth state immediately
+      setSupabaseUser(authUser);
+      setIsAuthenticated(true);
+
+      // Fetch profile in background
+      const profile = await fetchUserProfile(authUser.id);
+      if (profile) {
+        setUser(profile);
+        setError(null);
+      } else {
+        setError("Profile not found. Please contact support.");
       }
     } catch (error) {
       console.error("Error initializing auth:", error);
@@ -235,8 +244,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event: any, session: any) => {
-      if (event === "SIGNED_IN") {
-        await setAuthFromSession(session);
+      if (event === "SIGNED_IN" && session?.user) {
+        await setAuthFromUser(session.user);
         toast.success("Welcome back!");
         setIsLoading(false);
       } else if (event === "SIGNED_OUT") {

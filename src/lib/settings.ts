@@ -1,5 +1,5 @@
-import { supabase } from './supabase';
-import { Setting } from '../types';
+import { supabase } from "./supabase/client";
+import { Setting } from "../types";
 
 /**
  * Settings utility functions for managing application configuration
@@ -21,20 +21,28 @@ export class SettingsManager {
       }
 
       const { data, error } = await supabase
-        .from('settings')
-        .select('value')
-        .eq('key', key)
+        .from("settings")
+        .select("value")
+        .eq("key", key)
         .single();
 
       if (error) {
-        console.warn(`Setting '${key}' not found, using default:`, defaultValue);
+        console.warn(
+          `Setting '${key}' not found, using default:`,
+          defaultValue
+        );
         return defaultValue;
       }
 
       let value = data.value;
-      
+
       // Parse JSON strings
-      if (typeof value === 'string' && (value.startsWith('{') || value.startsWith('[') || value.startsWith('"'))) {
+      if (
+        typeof value === "string" &&
+        (value.startsWith("{") ||
+          value.startsWith("[") ||
+          value.startsWith('"'))
+      ) {
         try {
           value = JSON.parse(value);
         } catch (e) {
@@ -56,12 +64,14 @@ export class SettingsManager {
   /**
    * Get multiple settings by category
    */
-  static async getSettingsByCategory(category: string): Promise<Record<string, any>> {
+  static async getSettingsByCategory(
+    category: string
+  ): Promise<Record<string, any>> {
     try {
       const { data, error } = await supabase
-        .from('settings')
-        .select('key, value')
-        .eq('category', category);
+        .from("settings")
+        .select("key, value")
+        .eq("category", category);
 
       if (error) {
         throw error;
@@ -70,16 +80,21 @@ export class SettingsManager {
       const settings: Record<string, any> = {};
       data?.forEach((setting: any) => {
         let value = setting.value;
-        
+
         // Parse JSON strings
-        if (typeof value === 'string' && (value.startsWith('{') || value.startsWith('[') || value.startsWith('"'))) {
+        if (
+          typeof value === "string" &&
+          (value.startsWith("{") ||
+            value.startsWith("[") ||
+            value.startsWith('"'))
+        ) {
           try {
             value = JSON.parse(value);
           } catch (e) {
             // Keep as string if not valid JSON
           }
         }
-        
+
         settings[setting.key] = value;
         this.cache.set(setting.key, value);
       });
@@ -87,7 +102,10 @@ export class SettingsManager {
       this.updateCacheExpiry();
       return settings;
     } catch (error) {
-      console.error(`Error fetching settings for category '${category}':`, error);
+      console.error(
+        `Error fetching settings for category '${category}':`,
+        error
+      );
       return {};
     }
   }
@@ -98,9 +116,9 @@ export class SettingsManager {
   static async getPublicSettings(): Promise<Record<string, any>> {
     try {
       const { data, error } = await supabase
-        .from('settings')
-        .select('key, value')
-        .eq('is_public', true);
+        .from("settings")
+        .select("key, value")
+        .eq("is_public", true);
 
       if (error) {
         throw error;
@@ -109,16 +127,21 @@ export class SettingsManager {
       const settings: Record<string, any> = {};
       data?.forEach((setting: any) => {
         let value = setting.value;
-        
+
         // Parse JSON strings
-        if (typeof value === 'string' && (value.startsWith('{') || value.startsWith('[') || value.startsWith('"'))) {
+        if (
+          typeof value === "string" &&
+          (value.startsWith("{") ||
+            value.startsWith("[") ||
+            value.startsWith('"'))
+        ) {
           try {
             value = JSON.parse(value);
           } catch (e) {
             // Keep as string if not valid JSON
           }
         }
-        
+
         settings[setting.key] = value;
         this.cache.set(setting.key, value);
       });
@@ -126,7 +149,7 @@ export class SettingsManager {
       this.updateCacheExpiry();
       return settings;
     } catch (error) {
-      console.error('Error fetching public settings:', error);
+      console.error("Error fetching public settings:", error);
       return {};
     }
   }
@@ -134,18 +157,23 @@ export class SettingsManager {
   /**
    * Update a setting value
    */
-  static async updateSetting(key: string, value: any, category: string = 'general'): Promise<boolean> {
+  static async updateSetting(
+    key: string,
+    value: any,
+    category: string = "general"
+  ): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('settings')
-        .upsert({
+      const { error } = await supabase.from("settings").upsert(
+        {
           key,
           value: JSON.stringify(value),
           category,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'key'
-        });
+          updated_at: new Date().toISOString(),
+        },
+        {
+          onConflict: "key",
+        }
+      );
 
       if (error) {
         throw error;
@@ -185,7 +213,11 @@ export class SettingsManager {
 
 // Convenience functions
 export const getSetting = SettingsManager.getSetting.bind(SettingsManager);
-export const getSettingsByCategory = SettingsManager.getSettingsByCategory.bind(SettingsManager);
-export const getPublicSettings = SettingsManager.getPublicSettings.bind(SettingsManager);
-export const updateSetting = SettingsManager.updateSetting.bind(SettingsManager);
-export const clearSettingsCache = SettingsManager.clearCache.bind(SettingsManager);
+export const getSettingsByCategory =
+  SettingsManager.getSettingsByCategory.bind(SettingsManager);
+export const getPublicSettings =
+  SettingsManager.getPublicSettings.bind(SettingsManager);
+export const updateSetting =
+  SettingsManager.updateSetting.bind(SettingsManager);
+export const clearSettingsCache =
+  SettingsManager.clearCache.bind(SettingsManager);
