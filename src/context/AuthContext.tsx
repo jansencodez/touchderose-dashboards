@@ -118,25 +118,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
-    // Let Supabase handle session management
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        setSupabaseUser(session.user);
-        const profile = await fetchUserProfile(session.user.id);
-        setUser(profile);
-        if (event === "SIGNED_IN") {
-          toast.success("Welcome back!");
-        }
-      } else {
-        setUser(null);
-        setSupabaseUser(null);
-      }
-      setIsLoading(false);
-    });
+    // Get current user
+    const getUser = async () => {
+      console.log("AuthContext: Getting current user...");
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      console.log(
+        "AuthContext: getUser result:",
+        user ? "User found" : "No user"
+      );
 
-    return () => subscription.unsubscribe();
+      if (user) {
+        console.log("AuthContext: Setting supabase user:", user.id);
+        setSupabaseUser(user);
+        console.log("AuthContext: Fetching profile for user:", user.id);
+        const profile = await fetchUserProfile(user.id);
+        console.log(
+          "AuthContext: Profile result:",
+          profile ? "Profile found" : "No profile"
+        );
+        setUser(profile);
+      } else {
+        console.log("AuthContext: No user found, setting null states");
+      }
+
+      console.log("AuthContext: Setting loading to false");
+      setIsLoading(false);
+    };
+
+    getUser();
   }, []);
 
   const isAdmin = user?.role === "admin" || user?.role === "staff";
