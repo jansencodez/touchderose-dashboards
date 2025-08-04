@@ -44,20 +44,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<Profile | null>(null);
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Cache for user profiles to avoid repeated database calls
-  const profileCache = new Map<string, Profile>();
 
   const fetchUserProfile = async (
     authUserId: string
   ): Promise<Profile | null> => {
-    // Check cache first
-    if (profileCache.has(authUserId)) {
-      return profileCache.get(authUserId) || null;
-    }
-
     try {
       const { data, error } = await supabase
         .from("profiles")
@@ -65,103 +55,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         .eq("auth_user_id", authUserId)
         .single();
 
-      if (error || !data) {
-        return null;
-      }
-
-      const profile = data as Profile;
-      // Cache the profile
-      profileCache.set(authUserId, profile);
-      return profile;
+      if (error || !data) return null;
+      return data as Profile;
     } catch (error) {
       console.error("Error fetching profile:", error);
       return null;
     }
   };
 
-  const setAuthFromUser = async (authUser: SupabaseUser) => {
-    if (!authUser) {
-      setUser(null);
-      setSupabaseUser(null);
-      setIsAuthenticated(false);
-      setError(null);
-      return;
-    }
-
-    // Set supabase user immediately for faster response
-    setSupabaseUser(authUser);
-    setIsAuthenticated(true);
-
-    // Fetch profile in background
-    const profile = await fetchUserProfile(authUser.id);
-
-    if (!profile) {
-      // Don't sign out immediately, just set error
-      setUser(null);
-      setError("Profile not found. Please contact support.");
-      return;
-    }
-
-    setUser(profile);
-    setError(null);
-  };
-
-  const initializeAuth = async () => {
-    try {
-      // Get current user using Supabase SSR
-      const {
-        data: { user: authUser },
-        error,
-      } = await supabase.auth.getUser();
-
-      if (error || !authUser) {
-        setUser(null);
-        setSupabaseUser(null);
-        setIsAuthenticated(false);
-        setError(null);
-        return;
-      }
-
-      // Set basic auth state immediately
-      setSupabaseUser(authUser);
-      setIsAuthenticated(true);
-
-      // Fetch profile in background
-      const profile = await fetchUserProfile(authUser.id);
-      if (profile) {
-        setUser(profile);
-        setError(null);
-      } else {
-        setError("Profile not found. Please contact support.");
-      }
-    } catch (error) {
-      console.error("Error initializing auth:", error);
-      setError("Failed to initialize authentication");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const login = async (email: string, password: string) => {
-    try {
-      setError(null);
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      if (error || !data.user) {
-        const errorMessage = error?.message || "Login failed";
-        setError(errorMessage);
-        return { success: false, error: errorMessage };
-      }
-
-      return { success: true };
-    } catch (error) {
-      const errorMessage = "An unexpected error occurred";
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
+    if (error) {
+      return { success: false, error: error.message };
     }
+
+    return { success: true };
   };
 
   const signup = async (
@@ -170,93 +82,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     name: string,
     phone: string
   ) => {
-    try {
-      setError(null);
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name: name,
-            phone: phone,
-          },
-        },
-      });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name, phone },
+      },
+    });
 
-      if (error || !data.user) {
-        const errorMessage = error?.message || "Signup failed";
-        setError(errorMessage);
-        return { success: false, error: errorMessage };
-      }
-
-      return { success: true };
-    } catch (error) {
-      const errorMessage = "An unexpected error occurred during signup";
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
+    if (error) {
+      return { success: false, error: error.message };
     }
+
+    return { success: true };
   };
 
   const signInWithGoogle = async () => {
-    try {
-      setError(null);
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
 
-      if (error) {
-        const errorMessage = error.message || "Google sign-in failed";
-        setError(errorMessage);
-        return { success: false, error: errorMessage };
-      }
-
-      return { success: true };
-    } catch (error) {
-      const errorMessage = "An unexpected error occurred during Google sign-in";
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
+    if (error) {
+      return { success: false, error: error.message };
     }
+
+    return { success: true };
   };
 
   const logout = async () => {
-    try {
-      await supabase.auth.signOut();
-      setUser(null);
-      setSupabaseUser(null);
-      setIsAuthenticated(false);
-      setError(null);
-      // Clear cache on logout
-      profileCache.clear();
-      toast.success("Logged out successfully");
-    } catch (error) {
-      console.error("Error logging out:", error);
-      toast.error("Error logging out");
-    }
+    await supabase.auth.signOut();
+    toast.success("Logged out successfully");
   };
 
   useEffect(() => {
-    // Initialize auth immediately
-    initializeAuth();
-
+    // Let Supabase handle session management
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event: any, session: any) => {
-      if (event === "SIGNED_IN" && session?.user) {
-        await setAuthFromUser(session.user);
-        toast.success("Welcome back!");
-        setIsLoading(false);
-      } else if (event === "SIGNED_OUT") {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        setSupabaseUser(session.user);
+        const profile = await fetchUserProfile(session.user.id);
+        setUser(profile);
+        if (event === "SIGNED_IN") {
+          toast.success("Welcome back!");
+        }
+      } else {
         setUser(null);
         setSupabaseUser(null);
-        setIsAuthenticated(false);
-        setError(null);
-        // Clear cache on sign out
-        profileCache.clear();
-        setIsLoading(false);
       }
+      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -268,8 +145,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     user,
     supabaseUser,
     isLoading,
-    isAuthenticated,
-    error,
+    isAuthenticated: !!supabaseUser,
+    error: null,
     login,
     signup,
     signInWithGoogle,
