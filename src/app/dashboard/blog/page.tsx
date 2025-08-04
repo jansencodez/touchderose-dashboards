@@ -37,7 +37,6 @@ export default function UserBlog() {
 
   const handleLike = async (postId: string) => {
     // Implementation for liking posts would go here
-    console.log("Like post:", postId);
   };
 
   const filteredPosts = posts.filter((post) => {

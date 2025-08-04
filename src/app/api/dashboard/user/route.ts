@@ -25,8 +25,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log("Dashboard API: Fetching data for auth user:", authUserId);
-
     // First, get the profile ID from auth_user_id
     const { data: profile, error: profileError } = await supabaseAdmin
       .from("profiles")
@@ -35,12 +33,10 @@ export async function GET(request: NextRequest) {
       .single();
 
     if (profileError || !profile) {
-      console.error("Error fetching profile:", profileError);
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
     const profileId = profile.id;
-    console.log("Dashboard API: Found profile ID:", profileId);
 
     // Fetch all data in parallel with optimized queries
     const [statsResult, recentBookingsResult] = await Promise.all([
@@ -100,12 +96,6 @@ export async function GET(request: NextRequest) {
       completedOrders,
       totalSpent,
     };
-
-    console.log("Dashboard API: Stats calculated:", stats);
-    console.log(
-      "Dashboard API: Recent bookings count:",
-      recentBookingsResult.data?.length || 0
-    );
 
     return NextResponse.json({
       success: true,

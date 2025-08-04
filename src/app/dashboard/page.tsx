@@ -47,27 +47,33 @@ const StatCard: React.FC<StatCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+          <p className="text-xs sm:text-sm font-medium text-gray-600">
+            {title}
+          </p>
+          <p className="text-lg sm:text-2xl font-bold text-gray-900 mt-1">
+            {value}
+          </p>
           {trend && (
             <div className="flex items-center mt-2">
               <span
-                className={`text-sm font-medium ${
+                className={`text-xs sm:text-sm font-medium ${
                   trend.isPositive ? "text-green-600" : "text-red-600"
                 }`}
               >
                 {trend.isPositive ? "+" : ""}
                 {trend.value}%
               </span>
-              <span className="text-sm text-gray-500 ml-1">vs last month</span>
+              <span className="text-xs sm:text-sm text-gray-500 ml-1">
+                vs last month
+              </span>
             </div>
           )}
         </div>
-        <div className={`p-3 rounded-lg border ${colorClasses[color]}`}>
-          <Icon className="w-6 h-6" />
+        <div className={`p-2 sm:p-3 rounded-lg border ${colorClasses[color]}`}>
+          <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
       </div>
     </div>
@@ -138,18 +144,11 @@ export default function UserDashboard() {
       );
       const result = await response.json();
 
-      console.log("Dashboard data:", result);
-
       if (!response.ok) {
         throw new Error(result.error || "Failed to fetch dashboard data");
       }
 
       if (result.success) {
-        console.log("Dashboard data:", result);
-        console.log(
-          "Recent bookings count:",
-          result.recentBookings?.length || 0
-        );
         setStats(result.stats);
         setRecentBookings(result.recentBookings || []);
       } else {
@@ -194,12 +193,12 @@ export default function UserDashboard() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4 sm:space-y-8">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-6 text-white">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 flex items-center justify-center">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-4 sm:p-6 text-white">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
               <Image
                 src="/assets/icon.png"
                 alt="Touch De Rose"
@@ -209,16 +208,16 @@ export default function UserDashboard() {
               />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">
+              <h1 className="text-xl sm:text-3xl font-bold">
                 Welcome back, {user?.name}!
               </h1>
-              <p className="text-blue-100 mt-2">
+              <p className="text-blue-100 mt-1 sm:mt-2 text-sm sm:text-base">
                 Here&apos;s an overview of your laundry services
               </p>
             </div>
           </div>
-          <div className="bg-blue-500 bg-opacity-30 px-4 py-2 rounded-lg">
-            <span className="font-medium">
+          <div className="bg-blue-500 bg-opacity-30 px-3 py-2 rounded-lg self-start sm:self-auto">
+            <span className="font-medium text-sm sm:text-base">
               {user?.points || 0} Reward Points
             </span>
           </div>
@@ -226,7 +225,7 @@ export default function UserDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6">
         <StatCard
           title="Active Bookings"
           value={stats.activeBookings}
@@ -248,95 +247,97 @@ export default function UserDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6">
         <button
           onClick={() => setShowBookingModal(true)}
-          className="bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg flex items-center justify-center space-x-3 shadow-md hover:shadow-lg"
+          className="bg-blue-600 text-white px-4 py-3 sm:px-6 sm:py-4 rounded-lg hover:bg-blue-700 transition-colors font-medium text-base sm:text-lg flex items-center justify-center space-x-2 sm:space-x-3 shadow-md hover:shadow-lg"
         >
-          <Calendar className="w-6 h-6" />
+          <Calendar className="w-5 h-5 sm:w-6 sm:h-6" />
           <span>New Booking</span>
         </button>
 
         <button
           onClick={() => setShowTestimonialModal(true)}
-          className="bg-green-600 text-white px-6 py-4 rounded-lg hover:bg-green-700 transition-colors font-medium text-lg flex items-center justify-center space-x-3 shadow-md hover:shadow-lg"
+          className="bg-green-600 text-white px-4 py-3 sm:px-6 sm:py-4 rounded-lg hover:bg-green-700 transition-colors font-medium text-base sm:text-lg flex items-center justify-center space-x-2 sm:space-x-3 shadow-md hover:shadow-lg"
         >
-          <Star className="w-6 h-6" />
+          <Star className="w-5 h-5 sm:w-6 sm:h-6" />
           <span>Leave Review</span>
         </button>
       </div>
 
       {/* Recent Bookings */}
       <div className="bg-white rounded-lg shadow-lg border border-gray-200">
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900">Recent Bookings</h2>
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
+            Recent Bookings
+          </h2>
           <button
             onClick={() => (window.location.href = "/dashboard/bookings")}
-            className="text-blue-600 hover:text-blue-700 font-medium flex items-center space-x-1"
+            className="text-blue-600 hover:text-blue-700 font-medium flex items-center space-x-1 text-sm sm:text-base"
           >
             <span>View All</span>
             <Eye className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {recentBookings.length > 0 ? (
             <div className="space-y-4">
               {recentBookings.map((booking) => (
                 <div
                   key={booking.id}
-                  className="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors border border-gray-200"
+                  className="bg-gray-50 rounded-lg p-4 sm:p-6 hover:bg-gray-100 transition-colors border border-gray-200"
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-3 sm:space-y-0">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-4 mb-3">
-                        <div className="bg-blue-100 p-3 rounded-lg">
-                          <Package className="w-6 h-6 text-blue-600" />
+                      <div className="flex items-center space-x-3 sm:space-x-4 mb-3">
+                        <div className="bg-blue-100 p-2 sm:p-3 rounded-lg">
+                          <Package className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold text-gray-900">
+                          <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                             {booking.order_number}
                           </h3>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-xs sm:text-sm text-gray-600">
                             Created on{" "}
                             {new Date(booking.created_at).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-4">
                         <div className="flex items-center space-x-2">
                           <Calendar className="w-4 h-4 text-gray-500" />
-                          <span className="text-sm text-gray-600">
+                          <span className="text-xs sm:text-sm text-gray-600">
                             Pickup:{" "}
                             {new Date(booking.pickup_date).toLocaleDateString()}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Clock className="w-4 h-4 text-gray-500" />
-                          <span className="text-sm text-gray-600">
+                          <span className="text-xs sm:text-sm text-gray-600">
                             Delivery:{" "}
                             {new Date(
                               booking.delivery_date
                             ).toLocaleDateString()}
                           </span>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2 sm:col-span-2 lg:col-span-1">
                           <MapPin className="w-4 h-4 text-gray-500" />
-                          <span className="text-sm text-gray-600 truncate">
+                          <span className="text-xs sm:text-sm text-gray-600 truncate">
                             {booking.address}
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-end space-y-3">
+                    <div className="flex flex-col items-end space-y-2 sm:space-y-3">
                       <div className="text-right">
-                        <span className="text-2xl font-bold text-gray-900">
+                        <span className="text-lg sm:text-2xl font-bold text-gray-900">
                           KES {booking.total.toLocaleString()}
                         </span>
                       </div>
-                      <div className="flex flex-col items-end space-y-2">
+                      <div className="flex flex-col items-end space-y-1 sm:space-y-2">
                         <StatusBadge
                           status={booking.booking_status}
                           type="booking"
@@ -352,22 +353,22 @@ export default function UserDashboard() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <div className="bg-gray-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Package className="w-10 h-10 text-gray-400" />
+            <div className="text-center py-8 sm:py-12">
+              <div className="bg-gray-100 w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <Package className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                 No recent bookings
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">
                 {stats.activeBookings > 0 || stats.completedOrders > 0
                   ? "Your recent bookings will appear here. Check all bookings for more details."
                   : "Start your laundry journey with your first booking"}
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
                 <button
                   onClick={() => setShowBookingModal(true)}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  className="bg-blue-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm sm:text-base"
                 >
                   New Booking
                 </button>
@@ -376,7 +377,7 @@ export default function UserDashboard() {
                     onClick={() =>
                       (window.location.href = "/dashboard/bookings")
                     }
-                    className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                    className="bg-gray-600 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg hover:bg-gray-700 transition-colors font-medium text-sm sm:text-base"
                   >
                     View All Bookings
                   </button>

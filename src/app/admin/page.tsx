@@ -122,11 +122,8 @@ export default function AdminDashboard() {
     setError(null);
 
     try {
-      console.log("Admin Dashboard: Fetching data...");
       const response = await fetch("/api/dashboard/admin");
       const result = await response.json();
-
-      console.log("Admin Dashboard: API response:", result);
 
       if (!response.ok) {
         throw new Error(result.error || "Failed to fetch dashboard data");
@@ -136,7 +133,6 @@ export default function AdminDashboard() {
         setStats(result.stats);
         setRecentBookings(result.recentBookings || []);
         setRecentPayments(result.recentPayments || []);
-        console.log("Admin Dashboard: Data set successfully");
       } else {
         throw new Error(result.error || "Failed to fetch dashboard data");
       }

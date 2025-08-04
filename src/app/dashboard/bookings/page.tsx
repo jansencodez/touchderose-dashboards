@@ -64,10 +64,6 @@ export default function UserBookings() {
 
       if (error) throw error;
 
-      console.log("UserBookings: Raw data from Supabase:", data);
-      console.log("UserBookings: User ID being used:", user.id);
-      console.log("UserBookings: Number of bookings found:", data?.length || 0);
-
       setBookings((data as any) || []);
     } catch (error) {
       console.error("Error fetching bookings:", error);
