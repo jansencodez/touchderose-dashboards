@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Settings, Save, Bell, Shield, Palette, Globe } from "lucide-react";
 import toast from "react-hot-toast";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 import { Setting } from "@/types";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 

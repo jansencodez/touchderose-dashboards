@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/lib/paystack";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/server";
 
 export async function POST(request: NextRequest) {
   try {

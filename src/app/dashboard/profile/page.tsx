@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { User, Mail, Phone, Calendar, Star, Save } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function UserProfile() {

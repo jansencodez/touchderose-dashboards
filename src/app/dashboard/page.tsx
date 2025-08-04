@@ -16,7 +16,7 @@ import { BookingModal } from "../../components/modals/BookingModal";
 import { TestimonialModal } from "../../components/modals/TestimonialModal";
 import { StatusBadge } from "../../components/ui/StatusBadge";
 import { useAuth } from "../../context/AuthContext";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 
 // StatCard Component
 interface StatCardProps {

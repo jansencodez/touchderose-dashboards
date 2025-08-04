@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { X, FileText, Hash } from "lucide-react";
 import toast from "react-hot-toast";
-import { supabase } from "../../../lib/supabase";
-import { LoadingSpinner } from "../../ui/LoadingSpinner";
+import { supabase } from "@/lib/supabase/client";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface CreatePostModalProps {
   isOpen: boolean;

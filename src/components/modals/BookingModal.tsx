@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { X, Calendar, Clock, MapPin, Package, CreditCard } from "lucide-react";
 import toast from "react-hot-toast";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface BookingModalProps {

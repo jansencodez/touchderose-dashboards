@@ -12,9 +12,9 @@ import {
   Trash2,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { supabase } from "../../../lib/supabase";
-import { Booking } from "../../../types";
-import { LoadingSpinner } from "../../ui/LoadingSpinner";
+import { supabase } from "@/lib/supabase/client";
+import { Booking } from "@/types";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface EditBookingModalProps {
   isOpen: boolean;

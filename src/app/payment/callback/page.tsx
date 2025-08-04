@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle, XCircle, Loader2, AlertCircle } from "lucide-react";
-import toast from "react-hot-toast";
+
 
 export default function PaymentCallback() {
   const router = useRouter();

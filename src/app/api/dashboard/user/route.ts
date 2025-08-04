@@ -1,17 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
+    const authUserId = searchParams.get("userId");
 
-    if (!userId) {
+    if (!authUserId) {
       return NextResponse.json(
         { error: "User ID is required" },
         { status: 400 }
       );
     }
+
+    console.log("Dashboard API: Fetching data for auth user:", authUserId);
+
+    // First, get the profile ID from auth_user_id
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", authUserId)
+      .single();
+
+    if (profileError || !profile) {
+      console.error("Error fetching profile:", profileError);
+      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+    }
+
+    const profileId = profile.id;
+    console.log("Dashboard API: Found profile ID:", profileId);
 
     // Fetch all data in parallel with optimized queries
     const [statsResult, recentBookingsResult] = await Promise.all([
@@ -19,15 +36,15 @@ export async function GET(request: NextRequest) {
       supabase
         .from("bookings")
         .select("booking_status, total")
-        .eq("user_id", userId),
+        .eq("user_id", profileId),
 
       // Get recent bookings with optimized query
       supabase
         .from("bookings")
         .select(
-          "id, order_number, pickup_date, booking_status, total, created_at"
+          "id, order_number, pickup_date, delivery_date, booking_status, payment_status, total, created_at, address"
         )
-        .eq("user_id", userId)
+        .eq("user_id", profileId)
         .order("created_at", { ascending: false })
         .limit(5),
     ]);
@@ -53,21 +70,30 @@ export async function GET(request: NextRequest) {
 
     // Calculate stats from the data
     const bookings = statsResult.data || [];
-    const activeBookings = bookings.filter((b) =>
+    const activeBookings = bookings.filter((b: any) =>
       ["pending", "confirmed", "in_progress"].includes(b.booking_status)
     ).length;
 
     const completedOrders = bookings.filter(
-      (b) => b.booking_status === "completed"
+      (b: any) => b.booking_status === "completed"
     ).length;
 
-    const totalSpent = bookings.reduce((sum, b) => sum + b.total, 0);
+    const totalSpent = bookings.reduce(
+      (sum: number, b: any) => sum + b.total,
+      0
+    );
 
     const stats = {
       activeBookings,
       completedOrders,
       totalSpent,
     };
+
+    console.log("Dashboard API: Stats calculated:", stats);
+    console.log(
+      "Dashboard API: Recent bookings count:",
+      recentBookingsResult.data?.length || 0
+    );
 
     return NextResponse.json({
       success: true,

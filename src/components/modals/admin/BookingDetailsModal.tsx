@@ -11,10 +11,10 @@ import {
   User,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { supabase } from "../../../lib/supabase";
-import { Booking, BookingStatus, PaymentStatus } from "../../../types";
-import { StatusBadge } from "../../ui/StatusBadge";
-import { LoadingSpinner } from "../../ui/LoadingSpinner";
+import { supabase } from "@/lib/supabase/client";
+import { Booking, BookingStatus, PaymentStatus } from "@/types";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface BookingDetailsModalProps {
   isOpen: boolean;

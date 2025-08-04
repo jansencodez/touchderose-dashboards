@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { MessageSquare, Search, Eye, CheckCircle, XCircle } from "lucide-react";
 import toast from "react-hot-toast";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 import { Feedback } from "@/types";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";

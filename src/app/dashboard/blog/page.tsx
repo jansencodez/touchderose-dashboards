@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Calendar, User, Heart, MessageCircle, Search } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 import { Post } from "@/types";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 

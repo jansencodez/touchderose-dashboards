@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { MessageSquare, Phone, Mail, Clock, Send } from "lucide-react";
 import toast from "react-hot-toast";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function UserSupport() {

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { FileText, Search, Plus, Edit, Trash2, Eye } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 import { Post } from "@/types";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { CreatePostModal } from "@/components/modals/admin/CreatePostModal";

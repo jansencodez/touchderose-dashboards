@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, MapPin, Clock, Package } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 import { Booking } from "@/types";
 import { BookingModal } from "@/components/modals/BookingModal";
 import { StatusBadge } from "@/components/ui/StatusBadge";

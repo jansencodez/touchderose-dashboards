@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { CreditCard, Search, Filter, Eye, Download } from "lucide-react";
-import { supabase } from "../../../lib/supabase";
-import { Payment } from "../../../types";
-import { StatusBadge } from "../../../components/ui/StatusBadge";
-import { LoadingSpinner } from "../../../components/ui/LoadingSpinner";
+import { supabase } from "@/lib/supabase/client";
+import { Payment } from "@/types";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function AdminPayments() {
   const [payments, setPayments] = useState<Payment[]>([]);

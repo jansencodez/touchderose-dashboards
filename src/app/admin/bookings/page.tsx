@@ -16,11 +16,11 @@ import {
   AlertCircle,
   XCircle,
 } from "lucide-react";
-import { BookingDetailsModal } from "../../../components/modals/admin/BookingDetailsModal";
-import { EditBookingModal } from "../../../components/modals/admin/EditBookingModal";
-import { StatusBadge } from "../../../components/ui/StatusBadge";
-import { supabase } from "../../../lib/supabase";
-import { Booking } from "../../../types";
+import { BookingDetailsModal } from "@/components/modals/admin/BookingDetailsModal";
+import { EditBookingModal } from "@/components/modals/admin/EditBookingModal";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { supabase } from "@/lib/supabase/client";
+import { Booking } from "@/types";
 
 // LoadingSpinner Component
 interface LoadingSpinnerProps {

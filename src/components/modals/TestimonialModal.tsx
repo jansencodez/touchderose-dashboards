@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { X, Star } from "lucide-react";
 import toast from "react-hot-toast";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 interface TestimonialModalProps {

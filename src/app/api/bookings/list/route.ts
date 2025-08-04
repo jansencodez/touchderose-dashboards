@@ -1,24 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@supabase/supabase-js";
+
+// Create a service role client for user operations
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  }
+);
+
+// Force dynamic rendering for this API route
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
+    const authUserId = searchParams.get("userId");
     const filter = searchParams.get("filter") || "all";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const offset = (page - 1) * limit;
 
-    if (!userId) {
+    if (!authUserId) {
       return NextResponse.json(
         { error: "User ID is required" },
         { status: 400 }
       );
     }
 
+    // First, get the profile ID from auth_user_id
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("auth_user_id", authUserId)
+      .single();
+
+    if (profileError || !profile) {
+      console.error("Error fetching profile:", profileError);
+      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+    }
+
+    const profileId = profile.id;
+
     // Build query with optimized filtering
-    let query = supabase
+    let query = supabaseAdmin
       .from("bookings")
       .select(
         `
@@ -28,7 +57,7 @@ export async function GET(request: NextRequest) {
         booking_items(id, name, quantity, price)
       `
       )
-      .eq("user_id", userId)
+      .eq("user_id", profileId)
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
 

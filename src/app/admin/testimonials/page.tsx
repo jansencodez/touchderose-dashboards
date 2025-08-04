@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Star, Search, CheckCircle, XCircle, Eye } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase/client";
 import { Testimonial } from "@/types";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
